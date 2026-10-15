@@ -1,0 +1,6 @@
+{
+  "name": "Bitácora",
+  "description": "Cuaderno de trabajo, tareas y notas con contextos, foco diario y sincronización en la nube.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

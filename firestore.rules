@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidBitacora(data) {
+      return data is map
+        && data.keys().hasAll(['v', 'day', 'ctx', 'tasks', 'notes'])
+        && data.v is number
+        && data.day is string && data.day.size() <= 10
+        && data.ctx is list && data.ctx.size() <= 100
+        && data.tasks is list && data.tasks.size() <= 5000
+        && data.notes is list && data.notes.size() <= 2000
+        && (!('updatedAt' in data) || data.updatedAt is number || data.updatedAt is string || data.updatedAt is timestamp);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && isValidId(userId) && isValidBitacora(request.resource.data);
+      allow update: if isOwner(userId) && isValidId(userId) && isValidBitacora(request.resource.data);
+      allow delete: if isOwner(userId) && isValidId(userId);
+    }
+  }
+}

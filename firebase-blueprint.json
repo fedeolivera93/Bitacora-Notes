@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "UserBitacora": {
+      "title": "User Bitacora State",
+      "description": "User notebook state containing tasks, notes, contexts, streak log, and focus",
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "number",
+          "description": "Schema version"
+        },
+        "day": {
+          "type": "string",
+          "description": "Current active day string in YYYY-MM-DD format",
+          "maxLength": 10
+        },
+        "focus": {
+          "type": "string",
+          "description": "Task ID of the current focused task"
+        },
+        "stamp": {
+          "type": "string",
+          "description": "Date YYYY-MM-DD when all daily tasks were finished",
+          "maxLength": 10
+        },
+        "log": {
+          "type": "object",
+          "description": "Record of completed task counts by date"
+        },
+        "ctx": {
+          "type": "array",
+          "description": "List of user contexts"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "List of user tasks"
+        },
+        "notes": {
+          "type": "array",
+          "description": "List of user notes"
+        },
+        "updatedAt": {
+          "type": "number",
+          "description": "Timestamp of last modification in milliseconds"
+        }
+      },
+      "required": ["v", "day", "ctx", "tasks", "notes"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserBitacora"
+      },
+      "description": "Private state document for an individual user notebook"
+    }
+  }
+}
